@@ -48,6 +48,7 @@ public class Collection {
 
     public List<Map<String, Object>> update(String info) throws Exception {
         List<Map<String, Object>> output = new ArrayList<>();
+        List<Map<String, Object>> out = new ArrayList<>();
         String where = info.replaceFirst("\\s*(?i)values\\s*('(\\s*[A-Z|a-z|А-Я|а-я]+\\s*)+'\\s*=\\s*" +
                 "('(\\s*[A-Z|a-z|А-Я|а-я]+\\s*)+'|\\d+\\.?\\d*|[A-Z|a-z|А-Я|а-я]+)\\s*,\\s*)*" +
                 "('(\\s*[A-Z|a-z|А-Я|а-я]+\\s*)+'\\s*=\\s*('(\\s*[A-Z|a-z|А-Я|а-я]+\\s*)+'|\\d+\\.?\\d*|" +
@@ -67,8 +68,8 @@ public class Collection {
             });
             output.addAll(data);
         } else {
-            output = search(where);
-            output.forEach(map -> {
+            out = search(where);
+            out.forEach(map -> {
                 data.remove(map);
                 try {
                     putMap(values, map);
@@ -79,6 +80,11 @@ public class Collection {
                     System.out.println("Строка пуста. Строка удалена.");
                 } else {
                     data.add(map);
+                }
+            });
+            out.forEach(map -> {
+                if (!map.isEmpty()) {
+                    output.add(map);
                 }
             });
         }
