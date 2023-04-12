@@ -53,11 +53,8 @@ public class Collection {
         validation(info);
         List<Map<String, Object>> output = new ArrayList<>();
         List<Map<String, Object>> out;
-        String where = info.replaceFirst("(?i)values\\s*('(\\s*[A-Za-zА-Яа-я]+\\s*)+'\\s*=\\s*" +
-                "('(\\s*[A-Za-zА-Яа-я]+\\s*)+'|\\d+\\.?\\d*|[A-Za-zА-Яа-я]+)\\s*,\\s*)*" +
-                "('(\\s*[A-Za-zА-Яа-я]+\\s*)+'\\s*=\\s*('(\\s*[A-Za-zА-Яа-я]+\\s*)+'|\\d+\\.?\\d*|" +
-                "[A-Za-zА-Яа-я]+))\\s*", "");
         String values = info.replaceFirst("(?i)where.*$", "");
+        String where = info.replaceFirst(values, "");
         if (where.isEmpty()) {
             data.forEach(map -> {
                 try {
@@ -83,8 +80,10 @@ public class Collection {
                 if (map.isEmpty()) {
                     System.out.println("Строка пуста. Строка удалена.");
                     out.remove(map);
-                } else {
+                } else if (!data.contains(map)) {
                     data.add(map);
+                } else {
+                    System.out.println("Такая строка уже есть в таблице. Она будет удалена.");
                 }
             });
             out.forEach(map -> {
@@ -256,12 +255,13 @@ public class Collection {
                             int index2 = brackets.size() + 1;
                             List<Map<String, Object>> bracket1 = bracketsResult.get(index);
                             List<Map<String, Object>> bracket2 = bracketsResult.get(index2);
+                            List<Map<String, Object>> bracket = new ArrayList<>();
                             for (Map<String, Object> map : bracket1) {
-                                if (!bracket2.contains(map)) {
-                                    bracket1.remove(map);
+                                if (bracket2.contains(map) && bracket1.contains(map)) {
+                                    bracket.add(map);
                                 }
                             }
-                            temp.addAll(bracket1);
+                            temp.addAll(bracket);
                             bracketsResult.remove(bracket1);
                             bracketsResult.remove(bracket2);
                         }
